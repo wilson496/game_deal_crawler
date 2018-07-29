@@ -21,6 +21,15 @@ OATH_CLIENT_SECRET = "6d954cf6cac888371b0a5af137b9d7d96366ef3a"
 
 #TODO: Use scrapy arguments to choose task that spider will perform / create different spider
 
+ITAD_REGIONS = json.loads(requests.get('https://private-ddbf55-itad.apiary-mock.com/v01/web/regions/').text)
+print(json.dumps(ITAD_REGIONS, indent=4, sort_keys=True))
+REGIONS = {}
+
+for each in ITAD_REGIONS['data']:
+    REGIONS[each] = ITAD_REGIONS['data'][each]    
+
+#TODO: Unit test to see if reverse geocode request will have the country code in the same JSON object in the JSON list response 
+
 GEO_LOCATION_REQUEST = json.loads(requests.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBJVwNotqwF5FFwoJeoD7eaVNb8LUDY1XU").text)
 GEO_LOCATION = GEO_LOCATION_REQUEST['location']
 LATITUDE = GEO_LOCATION['lat'] 
@@ -28,14 +37,25 @@ LONGITUDE = GEO_LOCATION['lng']
 
 #Rerverse geocoding request
 REVERSE_GEOCODING_REQUEST = gmaps.reverse_geocode((LATITUDE, LONGITUDE))
-PARSED_REVERSE = json.dumps(REVERSE_GEOCODING_REQUEST, indent=4, sort_keys=True)
+PARSED_REVERSE = json.dumps(REVERSE_GEOCODING_REQUEST[0], indent=4, sort_keys=True)
 
-print(PARSED_REVERSE)
+
+#print(PARSED_REVERSE)
+
+COUNTRY = REVERSE_GEOCODING_REQUEST[0]['address_components'][6]['short_name']
+#print(COUNTRY)
+
+QUERY_REGION = ''
+
+for each in REGIONS:
+    
+    if COUNTRY in REGIONS[each]['countries']:
+        print(REGIONS[each]['countries'])
+        QUERY_REGION = str(each)
+
+print(QUERY_REGION)
 
  
-
-
-
 class GameDealSpider(scrapy.Spider):
     name = 'game_spider'
     #start_urls = ['https://isthereanydeal.com/']
@@ -44,10 +64,10 @@ class GameDealSpider(scrapy.Spider):
         super(GameDealSpider, self).__init__(*args, **kwargs)
         
         #URLS to parse
-        self.start_urls = ['https://private-ddbf55-itad.apiary-mock.com/v01/%s/list/?%s' % (category.lower(), API_KEY)]
+        #self.start_urls = ['https://private-ddbf55-itad.apiary-mock.com/v01/%s/list/?%s&region=%s' % (category.lower(), ITAD_API_KEY, QUERY_REGION)]
         
         #TODO: Use if/when granted access to production 
-        #self.start_urls = ['https://api.isthereanydeal.com/v01/%s/list/?%s' % (category.lower(), API_KEY)]
+        self.start_urls = ['https://api.isthereanydeal.com/v01/%s/list/?%s&region=%s' % (category.lower(), ITAD_API_KEY, QUERY_REGION)]
         
 
     def start_requests(self):
