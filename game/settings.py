@@ -19,7 +19,8 @@ NEWSPIDER_MODULE = 'game.spiders'
 #USER_AGENT = 'game (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+# isthereanydeal.com does not appear to have a robots.txt file, so setting this false so it won't return 404 errors
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
