@@ -45,8 +45,12 @@ PARSED_REVERSE = json.dumps(REVERSE_GEOCODING_REQUEST[0], indent=4, sort_keys=Tr
 
 #print(PARSED_REVERSE)
 
-COUNTRY = REVERSE_GEOCODING_REQUEST[0]['address_components'][6]['short_name']
-#print(COUNTRY)
+for each in REVERSE_GEOCODING_REQUEST[0]['address_components']:
+        if "country" in each['types']:
+                COUNTRY = each['short_name']
+                break
+
+print(COUNTRY)
 
 QUERY_REGION = ''
 
