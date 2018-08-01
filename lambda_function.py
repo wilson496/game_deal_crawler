@@ -1,3 +1,5 @@
+#TODO: Migrate this project to AWS Lambda and use this to run it
+
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
