@@ -6,14 +6,16 @@ from twisted.internet.error import TimeoutError, TCPTimedOutError
 import json
 import requests
 import googlemaps
+import configparser
 
-#TODO: FIX THESE UPON RELEASE
-MAILGUN_API_KEY = '3b1f59cf-72e17a97'  
-ITAD_API_KEY = "9499128e51c390fc4c015db0185a824f0abb3cd4"
-gmaps = googlemaps.Client(key="AIzaSyBJVwNotqwF5FFwoJeoD7eaVNb8LUDY1XU")
-OATH_CLIENT_ID = "08be3a658c5a5e8c"
-OATH_CLIENT_SECRET = "6d954cf6cac888371b0a5af137b9d7d96366ef3a"
-
+config = configparser.ConfigParser()
+config.read('keys.ini')
+MAILGUN_API_KEY = config['keys']['mailgun_api_key']
+ITAD_API_KEY = config['keys']['itad_api_key']
+GOOGLE_MAPS_API_KEY = config['keys']['google_maps_api_key']
+OATH_CLIENT_ID = config['keys']['oath_client_id']
+OATH_CLIENT_SECRET = config['keys']['oath_client_secret']
+gmaps = googlemaps.Client(key=str(GOOGLE_MAPS_API_KEY))
 
 
 #TODO: Look into unit testing (start here: https://stackoverflow.com/questions/6456304/scrapy-unit-testing)
@@ -22,7 +24,6 @@ OATH_CLIENT_SECRET = "6d954cf6cac888371b0a5af137b9d7d96366ef3a"
 
 #TODO: Use scrapy arguments to choose task that spider will perform / create different spider
 
-#ITAD_REGIONS = json.loads(requests.get('https://private-ddbf55-itad.apiary-mock.com/v01/web/regions/').text)
 ITAD_REGIONS = json.loads(requests.get('https://api.isthereanydeal.com/v01/web/regions/').text)
 
 #print(json.dumps(ITAD_REGIONS, indent=4, sort_keys=True))
@@ -69,14 +70,8 @@ class GameDealSpider(scrapy.Spider):
 
     def __init__(self, category=None, *args, **kwargs):
         super(GameDealSpider, self).__init__(*args, **kwargs)
-        
-        #URLS to parse
-        #self.start_urls = ['https://private-ddbf55-itad.apiary-mock.com/v01/%s/list/?%s&region=%s' % (category.lower(), ITAD_API_KEY, QUERY_REGION)]
-        
-        #TODO: Use if/when granted access to production 
         self.start_urls = ['https://api.isthereanydeal.com/v01/%s/list/?key=%s&region=%s&=country=%s' % (category.lower(), ITAD_API_KEY, QUERY_REGION, COUNTRY)]
         
-
     def start_requests(self):
         for u in self.start_urls:
             yield scrapy.Request(u, callback=self.parse_httpbin,
@@ -139,7 +134,7 @@ def send_simple_message(formatted_games):
         text += each
     return requests.post(
         "https://api.mailgun.net/v3/sandbox93efa5bb89944484abb661b5a4349b2d.mailgun.org/messages",
-        auth=("api", "aa6d318d12c7b699b2d703865f1f10f7-3b1f59cf-72e17a97"),
+        auth=("api", "" + str(MAILGUN_API_KEY)),
         data={"from": "Mailgun Sandbox <postmaster@sandbox93efa5bb89944484abb661b5a4349b2d.mailgun.org>",
               "to": "Cameron Wilson <cameronwilson646@gmail.com>",
               "subject": "Hello Cameron Wilson",

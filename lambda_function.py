@@ -7,4 +7,4 @@ def lambda_handler(event, context):
 	process = CrawlerProcess(get_project_settings())
 	process.crawl('game')
 	process.start()
-	return((event)
+	return((event,context))
