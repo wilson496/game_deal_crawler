@@ -30,8 +30,6 @@ MAILGUN_DOMAIN = config['keys']['mailgun_domain']
 #TODO: Use scrapy arguments to choose task that spider will perform / create different spider
 
 ITAD_REGIONS = json.loads(requests.get('https://api.isthereanydeal.com/v01/web/regions/').text)
-
-#print(json.dumps(ITAD_REGIONS, indent=4, sort_keys=True))
 REGIONS = {}
 
 for each in ITAD_REGIONS['data']:
@@ -48,15 +46,10 @@ LONGITUDE = GEO_LOCATION['lng']
 REVERSE_GEOCODING_REQUEST = gmaps.reverse_geocode((LATITUDE, LONGITUDE))
 PARSED_REVERSE = json.dumps(REVERSE_GEOCODING_REQUEST[0], indent=4, sort_keys=True)
 
-
-#print(PARSED_REVERSE)
-
 for each in REVERSE_GEOCODING_REQUEST[0]['address_components']:
         if "country" in each['types']:
                 COUNTRY = each['short_name']
                 break
-
-print(COUNTRY)
 
 QUERY_REGION = ''
 
@@ -66,9 +59,6 @@ for each in REGIONS:
         #print(REGIONS[each]['countries'])
         QUERY_REGION = str(each)
 
-#print(QUERY_REGION)
-
- 
 class GameDealSpider(scrapy.Spider):
     name = 'game_spider'
     #start_urls = ['https://isthereanydeal.com/']
@@ -86,8 +76,6 @@ class GameDealSpider(scrapy.Spider):
     def parse_httpbin(self, response):
         self.logger.info('Got successful response from {}'.format(response.url))
         jsonresponse = json.loads(response.body_as_unicode())
-        pretty_json_response = json.dumps(jsonresponse, indent=4, sort_keys=True)
-        #print("RESPONSE" + str(pretty_json_response))
         currency = jsonresponse['.meta']['currency']
         formatted_games = []
         for game in jsonresponse['data']['list']:
@@ -102,7 +90,6 @@ class GameDealSpider(scrapy.Spider):
                   + "Buy this game at: " + str(game['urls']['buy']) + "\n"
                   + "*-----------------------*\n"
             )
-            #print(game_str)
             formatted_games.append(game_str)
 
         send_simple_message(formatted_games)
@@ -129,7 +116,7 @@ class GameDealSpider(scrapy.Spider):
             request = failure.request
             self.logger.error('TimeoutError on %s', request.url)
 
-#TODO: Send email with formatted game deals 
+
 #TODO: Consider using AWS Lambda, Azure functions (serverless computing) or just do an instance on DigitalOcean 
 
 def send_simple_message(formatted_games):
