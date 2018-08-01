@@ -8,6 +8,8 @@ import requests
 import googlemaps
 import configparser
 
+#Ensure that a .ini file named keys.ini is present in the scrapy project directory and
+# it contains all the needed values below.  
 config = configparser.ConfigParser()
 config.read('keys.ini')
 MAILGUN_API_KEY = config['keys']['mailgun_api_key']
@@ -16,6 +18,9 @@ GOOGLE_MAPS_API_KEY = config['keys']['google_maps_api_key']
 OATH_CLIENT_ID = config['keys']['oath_client_id']
 OATH_CLIENT_SECRET = config['keys']['oath_client_secret']
 gmaps = googlemaps.Client(key=str(GOOGLE_MAPS_API_KEY))
+CLIENT_NAME = config['keys']['client_name']
+CLIENT_EMAIL = config['keys']['client_email'] 
+MAILGUN_DOMAIN = config['keys']['mailgun_domain'] 
 
 
 #TODO: Look into unit testing (start here: https://stackoverflow.com/questions/6456304/scrapy-unit-testing)
@@ -135,7 +140,7 @@ def send_simple_message(formatted_games):
     return requests.post(
         "https://api.mailgun.net/v3/sandbox93efa5bb89944484abb661b5a4349b2d.mailgun.org/messages",
         auth=("api", "" + str(MAILGUN_API_KEY)),
-        data={"from": "Mailgun Sandbox <postmaster@sandbox93efa5bb89944484abb661b5a4349b2d.mailgun.org>",
-              "to": "Cameron Wilson <cameronwilson646@gmail.com>",
-              "subject": "Hello Cameron Wilson",
+        data={"from": "Mailgun Sandbox " + str(MAILGUN_DOMAIN),
+              "to": str(CLIENT_NAME) + " " + str(CLIENT_EMAIL),
+              "subject": "Latest deals from isthereanydeal.com",
               "text": "Hi! Here are the latest deals from isthereanydeal.com!\n\n" + text})
