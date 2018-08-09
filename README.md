@@ -2,6 +2,11 @@
 Web crawler to crawl isthereanydeal.com to find deals on video games.
 
 
+
+
+
+
+
 Before running the program, ensure you have installed the requirements from requirements.txt using pip
 
 `pip install -r requirements.txt`
