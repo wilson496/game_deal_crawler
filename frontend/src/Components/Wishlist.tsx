@@ -21,7 +21,8 @@ export default class WishList extends React.Component<{}, WishlistState> {
         this.setState({
             items: [
                 { name: "Valheim", price: 4.99 },
-                { name: "Rust", price: 25.13 }
+                { name: "Rust", price: 25.13 },
+                { name: "My Spicy Booty", price: 3.50 }
             ]
         })
     }

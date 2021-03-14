@@ -22,7 +22,7 @@ export default class WishlistItemRow extends React.Component<WishlistItemProps> 
             <Row>
                 <Col sm={2} className="text-center">{this.props.rank}</Col>
                 <Col sm={7}>{this.props.name}</Col>
-                <Col sm={3}>{this.props.price}</Col>
+                <Col sm={3}>${this.props.price.toFixed(2)}</Col>
             </Row>
         )
     }
