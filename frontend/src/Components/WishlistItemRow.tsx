@@ -2,6 +2,8 @@ import React from "react"
 import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import Button from "react-bootstrap/Button"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faArrowCircleUp, faArrowCircleDown } from "@fortawesome/free-solid-svg-icons"
 
 type WishlistItemProps = {
 
@@ -28,10 +30,12 @@ export default class WishlistItemRow extends React.Component<WishlistItemProps> 
         return (
             <Row>
                 <Col sm={2} className="text-center">{this.props.rank}</Col>
-                <Col sm={7}>
+                <Col sm={1}>
+                    <FontAwesomeIcon onClick={() => this.props.promoteItem()} icon={faArrowCircleUp}/>
+                    <FontAwesomeIcon onClick={() => this.props.demoteItem()} icon={faArrowCircleDown}/>
+                </Col>
+                <Col sm={6}>
                     {this.props.name}
-                    <Button onClick={() => this.props.promoteItem()}>Promote</Button>
-                    <Button onClick={() => this.props.demoteItem()}>Demote</Button>
                 </Col>
                 <Col sm={3}>${this.props.price.toFixed(2)}</Col>
             </Row>
